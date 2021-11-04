@@ -25,29 +25,68 @@ app.get('/exercise', (req,res) => res.sendFile(path.join(__dirname, "./public/ex
 app.get('/stats', (req,res) => res.sendFile(path.join(__dirname, "./public/stats.html")) );
 
 
-app.get('/api/workouts', (req,res) => {
-    Workout.aggregate([
-        {
-          $addFields: {
-            totalDuration: {
-              $sum: '$exercises.duration',
-            },
+
+
+
+
+app.get('/api/workouts/range', (req,res) => {
+  Workout.aggregate([
+      {
+        $addFields: {
+          totalDuration: {
+            $sum: '$exercises.duration',
           },
         },
-      ])
-        .then((allWorkouts) => {
-          res.json(allWorkouts);
-        })
+      },
+    ])
+      .then((allWorkouts) => {
+        res.json(allWorkouts);
+      })
 }
 )
 
-app.post('/api/workouts', (req,res) => {
-    Workout.create({
-    })
-    .then((allWorkouts) => {
+
+
+
+
+app.get('/api/workouts', (req,res) => {
+  Workout.aggregate([
+      {
+        $addFields: {
+          totalDuration: {
+            $sum: '$exercises.duration',
+          },
+        },
+      },
+    ])
+      .then((allWorkouts) => {
         res.json(allWorkouts);
       })
+}
+)
+
+
+app.post('/api/workouts', (req,res) => {
+  Workout.create({
+  })
+  .then((allWorkouts) => {
+      res.json(allWorkouts);
+    })
 })
+
+app.put('/api/workouts/:id', (req,res) => {
+  Workout.findByIdAndUpdate(
+    req.params.id,
+
+    { 
+    $push: {
+        exercises: req.body
+    }})
+  .then((allWorkouts) => {
+      res.json(allWorkouts);
+    })
+})
+
 
 app.listen(PORT,() => console.log("server is on port 3000!") );
 
